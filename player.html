@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video Player</title>
+  <style>
+    body {
+  margin: 0;
+  padding: 0;
+}
+
+#video-container {
+  position: relative;
+  width: 100%;
+  height: 80%;
+}
+
+.video {
+  width: 100%;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.video-controls button,
+.video-controls input {
+  margin: 0 5px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.video-progress {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+.seek {
+  width: 100%;
+  height: 4px;
+  background-color: #555;
+  -webkit-appearance: none;
+}
+
+.seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.seek::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.seek-tooltip {
+  position: absolute;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-weight: bold;
+  padding: 4px 6px;
+  word-break: keep-all;
+  white-space: pre;
+  font-size: 12px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.volume-controls {
+  display: flex;
+  align-items: center;
+}
+
+.volume-button,
+.volume {
+  margin: 0 5px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.volume {
+  width: 60px;
+  height: 4px;
+  background-color: #555;
+  -webkit-appearance: none;
+}
+.play-pause-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  cursor: pointer;
+  background-color: black;
+}
+
+.play-pause-button svg {
+  width: 80px;
+  height: 80px;
+}
+
+.play-pause-button .hidden {
+  display: none;
+}
+
+
+.volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.volume::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.fullscreen-button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.playback-icons,
+.volume-button,
+.fullscreen-button {
+  display: flex;
+  align-items: center;
+}
+
+.playback-icons svg,
+.volume-button svg,
+.fullscreen-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.playback-icons .hidden {
+  display: none;
+}
+
+.playback-animation {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -40px;
+  margin-top: -40px;
+  width: 80px;
+  height: 80px;
+  border-radius: 80px;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.playback-icons .hidden {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Additional Styling for Fullscreen Mode */
+
+body:-webkit-full-screen {
+  overflow: hidden;
+}
+
+body:-moz-full-screen {
+  overflow: hidden;
+}
+
+body:fullscreen {
+  overflow: hidden;
+}
+
+body:-ms-fullscreen {
+  overflow: hidden;
+}
+
+#video-container:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+#video-container:-moz-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+#video-container:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+#video-container:-ms-fullscreen {
+  width: 100%;
+  height: 100%;
+}
+.pausebtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 100px;
+  height: 100px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-image: url(pp.png);
+  
+}
+
+
+  </style>
+</head>
+<body>
+  <div id="video-container">
+    <video controls class="video" id="video" preload="metadata" onclick="playpause()">
+      <source src="vid.mp4" type="video/mp4">
+
+
+    </video>
+    <div class="pausebtn" onclick="playpause()">
+    </div>
+  </div>
+
+    <div class="video-controls hidden" id="video-controls">
+        <div class="playback-controls">
+          <button data-title="Play (k)" id="play">
+            <svg class="playback-icons">
+              <use href="#play-icon"></use>
+              <use class="hidden" href="#pause"></use>
+            </svg>
+          </button>
+      
+          <div class="time">
+            <time id="time-elapsed">00:00</time>
+            <span> / </span>
+            <time id="duration">00:00</time>
+          </div>
+        </div>
+      
+        <div class="video-progress">
+          <progress id="progress-bar" value="0" min="0"></progress>
+          <input class="seek" id="seek" value="0" min="0" type="range" step="1">
+          <div class="seek-tooltip" id="seek-tooltip">00:00</div>
+        </div>
+      
+        <div class="volume-controls">
+          <div class="volume-button-container">
+            <button data-title="Mute (m)" class="volume-button" id="volume-button">
+              <svg>
+                <use class="hidden" href="#volume-mute"></use>
+                <use class="hidden" href="#volume-low"></use>
+                <use href="#volume-high"></use>
+              </svg>
+            </button>
+          </div>
+          <div class="volume-slider-container">
+            <input class="volume" id="volume" value="1" type="range" max="1" min="0" step="0.01">
+          </div>
+        </div>
+      
+        <div class="fullscreen-controls">
+          <button data-title="Full screen (f)" class="fullscreen-button" id="fullscreen-button">
+            <svg>
+              <use href="#fullscreen"></use>
+              <use class="hidden" href="#fullscreen-exit"></use>
+            </svg>
+          </button>
+        </div>
+      
+        <div class="playback-animation" id="playback-animation">
+          <svg class="playback-icons">
+            <use class="hidden" href="#play-icon"></use>
+            <use href="#pause"></use>
+          </svg>
+        </div>
+        </div>
+        
+ <script>
+  let myvideo=document.querySelector('video');
+  function playpause(){
+    if(video.paused){
+      video.play();
+      document.querySelector('.pausebtn').style.backgroundImage="none";
+  } else {
+    video.pause();
+    document.querySelector('.pausebtn').style.backgroundImage="url(pp.png)";
+  }
+}
+
+    // JavaScript code
+const video = document.getElementById('video');
+const videoControls = document.getElementById('video-controls');
+const playButton = document.getElementById('play');
+const playbackIcons = document.querySelectorAll('.playback-icons use');
+const timeElapsed = document.getElementById('time-elapsed');
+const duration = document.getElementById('duration');
+const progressBar = document.getElementById('progress-bar');
+const seek = document.getElementById('seek');
+const seekTooltip = document.getElementById('seek-tooltip');
+const volumeButton = document.getElementById('volume-button');
+const volumeIcons = document.querySelectorAll('.volume-button use');
+const volumeMute = document.querySelector('use[href="#volume-mute"]');
+const volumeLow = document.querySelector('use[href="#volume-low"]');
+const volumeHigh = document.querySelector('use[href="#volume-high"]');
+const volume = document.getElementById('volume');
+const fullscreenButton = document.getElementById('fullscreen-button');
+const playbackAnimation = document.getElementById('playback-animation');
+
+// Toggle play/pause icons and tooltip
+function togglePlay() {
+  if (video.paused || video.ended) {
+    video.play();
+    document.querySelector('.pausebtn').style.backgroundImage="none";
+  } else {
+    video.pause();
+    document.querySelector('.pausebtn').style.backgroundImage="url(play.png)";
+  }
+}
+// JavaScript code
+const playPauseButton = document.getElementById('play-pause-button');
+
+// Toggle play/pause button visibility
+function togglePlayPauseButton() {
+  playPauseButton.classList.toggle('hidden');
+}
+
+// Add event listener to play/pause button
+playButton.addEventListener('click', () => {
+  togglePlayPauseButton();
+  togglePlay();
+});
+
+// Update play/pause button when video ends
+video.addEventListener('ended', () => {
+  playPauseButton.classList.remove('hidden');
+  updatePlayButton();
+});
+
+// Update play button appearance and tooltip
+function updatePlayButton() {
+  playbackIcons.forEach((icon) => icon.classList.toggle('hidden'));
+
+  if (video.paused) {
+    playButton.setAttribute('data-title', 'Play (k)');
+  } else {
+    playButton.setAttribute('data-title', 'Pause (k)');
+  }
+}
+
+// Update the elapsed time display
+function updateTimeElapsed() {
+  const time = formatTime(Math.round(video.currentTime));
+  timeElapsed.innerText = `${time.minutes}:${time.seconds}`;
+  timeElapsed.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`);
+}
+
+// Update the progress bar and seek input
+function updateProgress() {
+  seek.value = Math.floor(video.currentTime);
+  progressBar.value = Math.floor(video.currentTime);
+}
+
+// Update the seek tooltip position and value
+function updateSeekTooltip(event) {
+  const skipTo = Math.round(
+    (event.offsetX / event.target.clientWidth) * parseInt(event.target.getAttribute('max'), 10)
+  );
+  seek.setAttribute('data-seek', skipTo);
+  const t = formatTime(skipTo);
+  seekTooltip.textContent = `${t.minutes}:${t.seconds}`;
+  const rect = video.getBoundingClientRect();
+  seekTooltip.style.left = `${event.pageX - rect.left}px`;
+}
+
+// Seek to a different point in the video
+function skipAhead(event) {
+  const skipTo = event.target.dataset.seek ? event.target.dataset.seek : event.target.value;
+  video.currentTime = skipTo;
+  progressBar.value = skipTo;
+  seek.value = skipTo;
+}
+
+// Update the video's volume
+function updateVolume() {
+  if (video.muted) {
+    video.muted = false;
+  }
+
+  video.volume = volume.value;
+}
+
+// Update the volume icon and tooltip
+function updateVolumeIcon() {
+  volumeIcons.forEach((icon) => icon.classList.add('hidden'));
+  volumeButton.setAttribute('data-title', 'Mute (m)');
+
+  if (video.muted || video.volume === 0) {
+    volumeMute.classList.remove('hidden');
+    volumeButton.setAttribute('data-title', 'Unmute (m)');
+  } else if (video.volume > 0 && video.volume <= 0.5) {
+    volumeLow.classList.remove('hidden');
+  } else {
+    volumeHigh.classList.remove('hidden');
+  }
+}
+
+// Toggle mute/unmute
+function toggleMute() {
+  video.muted = !video.muted;
+
+  if (video.muted) {
+    volume.setAttribute('data-volume', volume.value);
+    volume.value = 0;
+  } else {
+    volume.value = volume.dataset.volume;
+  }
+}
+
+// Animate playback button on play/pause
+function animatePlayback() {
+  playbackAnimation.animate(
+    [
+      {
+        opacity: 1,
+        transform: 'scale(1)',
+      },
+      {
+        opacity: 0,
+        transform: 'scale(1.3)',
+      },
+    ],
+    {
+      duration: 500,
+    }
+  );
+}
+
+// Toggle fullscreen mode
+function toggleFullScreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else if (document.webkitFullscreenElement) {
+    // Need this to support Safari
+    document.webkitExitFullscreen();
+  } else if (videoContainer.webkitRequestFullscreen) {
+    // Need this to support Safari
+    videoContainer.webkitRequestFullscreen();
+  } else {
+    videoContainer.requestFullscreen();
+  }
+}
+
+// Update fullscreen button icon and tooltip
+function updateFullscreenButton() {
+  fullscreenIcons.forEach((icon) => icon.classList.toggle('hidden'));
+
+  if (document.fullscreenElement) {
+    fullscreenButton.setAttribute('data-title', 'Exit full screen (f)');
+  } else {
+    fullscreenButton.setAttribute('data-title', 'Full screen (f)');
+  }
+}
+
+// Initialize the video player
+function initializeVideo() {
+  const videoDuration = Math.round(video.duration);
+  seek.setAttribute('max', videoDuration);
+  progressBar.setAttribute('max', videoDuration);
+  const time = formatTime(videoDuration);
+  duration.innerText = `${time.minutes}:${time.seconds}`;
+  duration.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`);
+}
+
+// Add event listeners
+playButton.addEventListener('click', togglePlay);
+video.addEventListener('play', updatePlayButton);
+video.addEventListener('pause', updatePlayButton);
+video.addEventListener('timeupdate', updateTimeElapsed);
+video.addEventListener('timeupdate', updateProgress);
+video.addEventListener('click', animatePlayback);
+seek.addEventListener('mousemove', updateSeekTooltip);
+seek.addEventListener('input', skipAhead);
+volume.addEventListener('input', updateVolume);
+video.addEventListener('volumechange', updateVolumeIcon);
+volumeButton.addEventListener('click', toggleMute);
+videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
+fullscreenButton.addEventListener('click', toggleFullScreen);
+video.addEventListener('loadedmetadata', initializeVideo);
+
+ </script>
+</body>
+</html>
